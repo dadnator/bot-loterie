@@ -67,7 +67,7 @@ class CroupierView(discord.ui.View):
     async def tirer_au_sort(self, interaction: discord.Interaction):
         role_croupier = interaction.guild.get_role(ID_CROUPIER)
         if not role_croupier or role_croupier not in interaction.user.roles:
-            await interaction.response.send_message("❌ Tu n'as pas le rôle de `Gerant discord` pour lancer le tirage.", ephemeral=True)
+            await interaction.response.send_message("❌ Tu n'as pas le rôle de `croupier` pour lancer le tirage.", ephemeral=True)
             return
 
         if not self.participants:
@@ -84,10 +84,17 @@ class CroupierView(discord.ui.View):
         # Boucle pour trouver un gagnant valide
         while participants_list:
             gagnant_id = random.choice(participants_list)
-            gagnant = interaction.guild.get_member(gagnant_id)
-            if gagnant:
-                break
-            else:
+            
+            try:
+                # La nouvelle ligne de code pour forcer la recherche sur Discord
+                gagnant = await interaction.guild.fetch_member(gagnant_id)
+                if gagnant:
+                    break
+            except discord.NotFound:
+                # Le membre n'a pas été trouvé, on le retire de la liste
+                participants_list.remove(gagnant_id)
+            except Exception:
+                # Gérer d'autres erreurs potentielles
                 participants_list.remove(gagnant_id)
 
         if not gagnant:
