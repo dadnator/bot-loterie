@@ -100,7 +100,7 @@ class CroupierView(discord.ui.View):
 
         montant_total = self.montant
         
-        # Créer la mention de rôle
+        # Récupérer le rôle pour la mention sur le résultat
         role_a_ping_resultat = f"<@&{ID_ROLE_ALERTE_LOTERIE}>"
 
         result_embed = discord.Embed(
@@ -112,7 +112,11 @@ class CroupierView(discord.ui.View):
         result_embed.add_field(name="Somme remportée", value=f"**{montant_total:,.0f}".replace(",", " ") + " kamas** 💰", inline=False)
         result_embed.set_footer(text="Félicitations au gagnant !")
         
-        await interaction.followup.send(content=f"{gagnant.mention} Félicitations ! 🎉 {role_a_ping_resultat}", embed=result_embed)
+        await interaction.followup.send(
+            content=f"{gagnant.mention} Félicitations ! 🎉 {role_a_ping_resultat}",
+            embed=result_embed,
+            allowed_mentions=discord.AllowedMentions(roles=True) # Ajout de cette ligne
+        )
         
         del loteries[self.message_id]
         
@@ -134,8 +138,11 @@ async def loterie(interaction: discord.Interaction, montant: int):
         await interaction.response.send_message("❌ Une loterie est déjà en cours. Attendez qu'elle se termine avant d'en lancer une nouvelle.", ephemeral=True)
         return
 
-    # Créer la mention de rôle
-    role_a_ping_lancement = f"<@&{ID_ROLE_ALERTE_LOTERIE}>"
+    # Créer la mention de rôle pour le lancement
+    ping_content = "Une nouvelle loterie est prête !"
+    role_membre = interaction.guild.get_role(ID_ROLE_ALERTE_LOTERIE)
+    if role_membre:
+        ping_content = f"{role_membre.mention} — Une nouvelle loterie est prête !"
 
     embed = discord.Embed(
         title="🎰 Nouvelle Loterie !",
@@ -148,10 +155,11 @@ async def loterie(interaction: discord.Interaction, montant: int):
     view = LoterieView(None, montant)
     
     await interaction.response.send_message(
-        content=f"{role_a_ping_lancement}",
+        content=ping_content,
         embed=embed,
         view=view,
         ephemeral=False,
+        allowed_mentions=discord.AllowedMentions(roles=True)
     )
 
     sent_message = await interaction.original_response()
