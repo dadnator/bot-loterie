@@ -78,31 +78,36 @@ class CroupierView(discord.ui.View):
         self.tirer_au_sort_button.disabled = True
         await interaction.response.edit_message(view=self)
 
-        # Tirage au sort
-        gagnant_id = random.choice(list(self.participants))
-        gagnant = interaction.guild.get_member(gagnant_id)
+        participants_list = list(self.participants)
+        gagnant = None
         
+        # Boucle pour trouver un gagnant valide
+        while participants_list:
+            gagnant_id = random.choice(participants_list)
+            gagnant = interaction.guild.get_member(gagnant_id)
+            if gagnant:
+                break
+            else:
+                participants_list.remove(gagnant_id)
+
         if not gagnant:
-            await interaction.followup.send("❌ Le gagnant n'a pas pu être trouvé. Le tirage est annulé.", ephemeral=True)
+            await interaction.followup.send("❌ Aucun participant valide n'a pu être trouvé. Le tirage est annulé.")
             del loteries[self.message_id]
             return
 
-        # Montant total
         montant_total = self.montant * len(self.participants)
 
-        # Envoyer le résultat
         result_embed = discord.Embed(
             title="🎉 Le grand gagnant est...",
-            description=f"Le tirage de la loterie de {self.montant:,}".replace(",", " ") + " kamas a eu lieu !",
+            description=f"Le tirage de la loterie de {self.montant:,.0f}".replace(",", " ") + " kamas a eu lieu !",
             color=discord.Color.gold()
         )
         result_embed.add_field(name="Gagnant", value=f"{gagnant.mention}", inline=False)
-        result_embed.add_field(name="Somme remportée", value=f"**{montant_total:,}".replace(",", " ") + " kamas** 💰", inline=False)
+        result_embed.add_field(name="Somme remportée", value=f"**{montant_total:,.0f}".replace(",", " ") + " kamas** 💰", inline=False)
         result_embed.set_footer(text="Félicitations au gagnant !")
         
         await interaction.followup.send(f"Félicitations {gagnant.mention} ! 🎉", embed=result_embed)
-
-        # Supprimer la loterie du dictionnaire
+        
         del loteries[self.message_id]
         
 # --- COMMANDES ---
@@ -180,7 +185,7 @@ async def participants(interaction: discord.Interaction):
     
     embed.add_field(name="Participants", value=participants_str, inline=False)
     
-    await interaction.response.send_message(embed=embed, ephemeral=True)
+    await interaction.response.send_message(embed=embed, ephemeral=False)
 
 # Commande pour le croupier pour passer à la phase de tirage
 @bot.tree.command(name="terminer_inscriptions", description="Termine les inscriptions de la loterie et passe à la phase de tirage.")
@@ -221,7 +226,7 @@ async def terminer_inscriptions(interaction: discord.Interaction):
     # Marquer la vue comme envoyée
     loteries[message_id]["croupier_view_sent"] = True
     
-    await interaction.response.send_message("✅ Inscriptions terminées. Un Gerant discord peut maintenant lancer le tirage.", ephemeral=True)
+    await interaction.response.send_message("✅ Inscriptions terminées. Un Gerant discord peut maintenant lancer le tirage.", ephemeral=False)
 
 @bot.event
 async def on_ready():
