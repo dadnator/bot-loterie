@@ -12,7 +12,7 @@ token = os.environ['TOKEN_BOT_DISCORD']
 # Remplacer les IDs par les vôtres
 ID_SALON_LOTERIE = 1366369136648654871
 ID_CROUPIER = 1401471414262829066
-ID_ROLE_ALERTE_LOTERIE = 1366378672281620495 # <<< REMPLACEZ CET ID PAR CELUI DU RÔLE À PING
+ID_ROLE_ALERTE_LOTERIE = 1366378672281620495
 
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="/", intents=intents)
@@ -102,8 +102,6 @@ class CroupierView(discord.ui.View):
         
         # Créer la mention de rôle
         role_a_ping_resultat = f"<@&{ID_ROLE_ALERTE_LOTERIE}>"
-        if not ID_ROLE_ALERTE_LOTERIE:
-            role_a_ping_resultat = "@everyone" # Fallback si l'ID n'est pas configuré
 
         result_embed = discord.Embed(
             title="🎉 Le grand gagnant est...",
@@ -114,7 +112,6 @@ class CroupierView(discord.ui.View):
         result_embed.add_field(name="Somme remportée", value=f"**{montant_total:,.0f}".replace(",", " ") + " kamas** 💰", inline=False)
         result_embed.set_footer(text="Félicitations au gagnant !")
         
-        # Ligne modifiée pour inclure le ping de rôle sur le résultat
         await interaction.followup.send(content=f"{gagnant.mention} Félicitations ! 🎉 {role_a_ping_resultat}", embed=result_embed)
         
         del loteries[self.message_id]
@@ -137,10 +134,8 @@ async def loterie(interaction: discord.Interaction, montant: int):
         await interaction.response.send_message("❌ Une loterie est déjà en cours. Attendez qu'elle se termine avant d'en lancer une nouvelle.", ephemeral=True)
         return
 
-    # Récupérer le rôle à ping pour le lancement
+    # Créer la mention de rôle
     role_a_ping_lancement = f"<@&{ID_ROLE_ALERTE_LOTERIE}>"
-    if not ID_ROLE_ALERTE_LOTERIE:
-        role_a_ping_lancement = "@everyone" # Fallback si l'ID n'est pas configuré
 
     embed = discord.Embed(
         title="🎰 Nouvelle Loterie !",
