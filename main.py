@@ -14,7 +14,7 @@ ID_SALON_LOTERIE = 1366369136648654871 # Remplacez par l'ID de votre salon de lo
 ID_CROUPIER = 1401471414262829066
 
 intents = discord.Intents.default()
-bot = commands.Bot(command_prefix="/", intents=intents)
+bot = commands.Bot(command_prefix="/", intents=intents)a
 
 # Dictionnaire pour stocker les loteries en cours
 loteries = {}
