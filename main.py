@@ -10,8 +10,8 @@ import asyncio
 token = os.environ['TOKEN_BOT_DISCORD']
 
 # Remplacer les IDs par les nouveaux si nécessaire
-ID_SALON_LOTERIE = 1404445873236213820 # Remplacez par l'ID de votre salon de loterie
-ID_CROUPIER = 1406210029815861258
+ID_SALON_LOTERIE = 1366369136648654871 # Remplacez par l'ID de votre salon de loterie
+ID_CROUPIER = 1401471414262829066
 
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="/", intents=intents)
@@ -67,7 +67,7 @@ class CroupierView(discord.ui.View):
     async def tirer_au_sort(self, interaction: discord.Interaction):
         role_croupier = interaction.guild.get_role(ID_CROUPIER)
         if not role_croupier or role_croupier not in interaction.user.roles:
-            await interaction.response.send_message("❌ Tu n'as pas le rôle de `croupier` pour lancer le tirage.", ephemeral=True)
+            await interaction.response.send_message("❌ Tu n'as pas le rôle de `Gerant discord` pour lancer le tirage.", ephemeral=True)
             return
 
         if not self.participants:
@@ -221,7 +221,7 @@ async def terminer_inscriptions(interaction: discord.Interaction):
     # Marquer la vue comme envoyée
     loteries[message_id]["croupier_view_sent"] = True
     
-    await interaction.response.send_message("✅ Inscriptions terminées. Un croupier peut maintenant lancer le tirage.", ephemeral=True)
+    await interaction.response.send_message("✅ Inscriptions terminées. Un Gerant discord peut maintenant lancer le tirage.", ephemeral=True)
 
 @bot.event
 async def on_ready():
