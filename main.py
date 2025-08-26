@@ -10,9 +10,9 @@ import asyncio
 token = os.environ['TOKEN_BOT_DISCORD']
 
 # Remplacer les IDs par les vôtres
-ID_SALON_LOTERIE = 1366369136648654871
-ID_CROUPIER = 1401471414262829066
-ID_ROLE_ALERTE_LOTERIE = 1366378672281620495
+ID_SALON_LOTERIE = 1394351891714015282
+ID_CROUPIER = 1213933619039576114
+ID_ROLE_ALERTE_LOTERIE = 1213933552807444522
 
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="/", intents=intents)
@@ -23,7 +23,7 @@ loteries = {}
 @bot.tree.error
 async def on_app_command_error(interaction: discord.Interaction, error):
     if isinstance(error, app_commands.CheckFailure):
-        await interaction.response.send_message("❌ Tu n'as pas la permission d'utiliser cette commande.", ephemeral=True)
+        await interaction.response.send_message("❌ Tu n'as pas la permission d'utiliser cette commande seul les Bras Droit peut utiliser.", ephemeral=True)
 
 # Vue pour le bouton "Participer"
 class LoterieView(discord.ui.View):
@@ -67,7 +67,7 @@ class CroupierView(discord.ui.View):
     async def tirer_au_sort(self, interaction: discord.Interaction):
         role_croupier = interaction.guild.get_role(ID_CROUPIER)
         if not role_croupier or role_croupier not in interaction.user.roles:
-            await interaction.response.send_message("❌ Tu n'as pas la permission de `croupier` pour lancer le tirage.", ephemeral=True)
+            await interaction.response.send_message("❌ Tu n'as pas la permission de `Bras Droit` pour lancer le tirage.", ephemeral=True)
             return
 
         if not self.participants:
